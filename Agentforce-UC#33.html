@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AgentForce HLS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <style>
+      /* Base styles */
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+      /* Reset and base styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        line-height: 1.5;
+        color: #374151;
+        background-color: #f8fafc;
+      }
+
+      .page-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 2rem 3rem;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+        color: #1e40af;
+        font-weight: 600;
+      }
+
+      /* Example Conversation styling refinements */
+      .conversation-role {
+        background-color: #f8fafc;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .conversation-item {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        align-items: flex-start;
+      }
+
+      .conversation-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .conversation-message {
+        flex: 1;
+        line-height: 1.5;
+      }
+
+      .conversation-actor {
+        flex-shrink: 0;
+        font-weight: 600;
+      }
+
+      /* Utility classes */
+      .bg-gray-50 {
+        background-color: #f9fafb;
+      }
+      .bg-blue-50 {
+        background-color: #eff6ff;
+        border-radius: 0;
+        border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+      }
+      .bg-blue-700 {
+        background-color: #1d4ed8;
+      }
+      .bg-green-50 {
+        background-color: #ecfdf5;
+      }
+
+      .text-blue-600 {
+        color: #2563eb;
+      }
+      .text-blue-700 {
+        color: #1d4ed8;
+      }
+      .text-green-700 {
+        color: #047857;
+      }
+      .text-gray-600 {
+        color: #4b5563;
+      }
+      .text-white {
+        color: #ffffff;
+      }
+
+      .max-w-7xl {
+        max-width: 80rem;
+      }
+      .mx-auto {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .mb-4 {
+        margin-bottom: 1rem;
+      }
+      .mb-8 {
+        margin-bottom: 2rem;
+      }
+      .mt-1 {
+        margin-top: 0.25rem;
+      }
+      .mr-2 {
+        margin-right: 0.5rem;
+      }
+      .mr-3 {
+        margin-right: 0.75rem;
+      }
+
+      .p-3 {
+        padding: 0.75rem;
+      }
+      .p-4 {
+        padding: 1rem;
+      }
+      .px-6 {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+      .py-2 {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+      }
+      .py-8 {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+      }
+
+      .text-3xl {
+        font-size: 1.875rem;
+      }
+      .text-xl {
+        font-size: 1.25rem;
+      }
+      .text-sm {
+        font-size: 0.875rem;
+      }
+
+      .font-bold {
+        font-weight: 700;
+      }
+      .font-semibold {
+        font-weight: 600;
+      }
+
+      .rounded-lg {
+        border-radius: 0.5rem;
+      }
+
+      .space-y-2 > * + * {
+        margin-top: 0.5rem;
+      }
+      .space-y-3 > * + * {
+        margin-top: 0;
+      }
+      .space-y-3 > *:first-child .bg-blue-50 {
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+      }
+      .space-y-3 > *:last-child .bg-blue-50 {
+        border-bottom-left-radius: 0.5rem;
+        border-bottom-right-radius: 0.5rem;
+        border-bottom: none;
+      }
+      .space-y-6 > * + * {
+        margin-top: 1.5rem;
+      }
+
+      .flex {
+        display: flex;
+      }
+      .items-center {
+        align-items: center;
+      }
+      .items-start {
+        align-items: flex-start;
+      }
+      .text-center {
+        text-align: center;
+      }
+
+      /* Grid layout */
+      .grid {
+        display: grid;
+      }
+      .gap-8 {
+        gap: 2rem;
+      }
+
+      /* Responsive design */
+      @media (min-width: 768px) {
+        .md\:grid-cols-2 {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      /* Additional styling */
+      .toc-item {
+        position: relative;
+        padding-left: 1.5rem;
+      }
+
+      .toc-item::before {
+        content: "•";
+        position: absolute;
+        left: 0.5rem;
+        color: #1e40af;
+      }
+
+      .diagram-container {
+        padding: 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background-color: #f8fafc;
+      }
+
+      .scenario-card {
+        border-left: 4px solid #1e40af;
+      }
+
+      .usecase-card {
+        border-left: 4px solid #0891b2;
+      }
+
+      .icon-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1d4ed8",
+              secondary: "#64748b",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-gray-50">
+
+
+  <!-- Header with Logo -->
+  <div class="bg-white shadow-md py-4 px-6 mb-8">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <img src="https://page1.genspark.site/v1/base64_upload/fc01e373e31c3d1ebde6919ce1252e12" alt="Bay Bridge Digital Logo" class="h-12">
+      <h1 class="text-3xl font-bold text-blue-700">Agentforce World Tour (Stand 215) - Paris 2025</h1>
+    </div>
+  </div>
+
+  <!-- Table of Contents -->
+  <div class="max-w-7xl mx-auto bg-white shadow-md rounded-lg p-6 mb-8">
+    <h2 class="text-2xl font-bold mb-4 text-blue-700">Table des matières</h2>
+    <ul class="space-y-2">
+      <li class="toc-item"><a href="#section1" class="text-blue-600 hover:text-blue-800">1. Commercial - HCP Engagement</a></li>
+      <li class="toc-item"><a href="#section2" class="text-blue-600 hover:text-blue-800">2. Clinical Engagement</a></li>
+      <li class="toc-item"><a href="#section3" class="text-blue-600 hover:text-blue-800">3. Patient Engagement</a></li>
+      <li class="toc-item"><a href="#section4" class="text-blue-600 hover:text-blue-800">4. Collaborative Engagement</a></li>
+    </ul>
+  </div>
+
+
+    <div class="max-w-7xl mx-auto p-4 md:p-8">
+      <header class="text-center py-8 mb-8">
+        <div
+          class="bg-gradient-to-r from-blue-600 to-blue-800 text-white inline-block px-6 py-4 rounded-xl shadow-lg mb-4 transform hover:scale-105 transition-transform duration-300"
+        >
+          <h1
+            class="text-3xl md:text-4xl font-bold flex items-center justify-center gap-3 text-white"
+          >
+            <i class="fas fa-handshake text-white"></i>
+            1. Commercial - HCP Engagement
+          </h1>
+          <p class="text-white mt-2">Next-Gen HCP Enablement Strategy</p>
+        </div>
+      </header>
+
+      <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Left Column -->
+        <div class="space-y-8">
+          <section
+            class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-info-circle text-blue-600"></i>
+              Description
+            </h2>
+            <p class="text-gray-600 leading-relaxed">
+              L'agent HCP Engagement analyse en continu les interactions
+              commerciales et médicales avec les professionnels de santé (HCP),
+              afin de renforcer la qualité des échanges, d'optimiser le temps de
+              réponse et d'accroître la couverture terrain. En s'appuyant sur
+              les données de CRM, de portail self-service, il propose des
+              recommandations personnalisées pour maximiser l'impact de chaque
+              contact et automatiser les tâches à faible valeur ajoutée.
+            </p>
+          </section>
+
+          <section
+            class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-key text-blue-600"></i>
+              Fonctionnalités
+            </h2>
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700"
+                  >Suivi en temps réel des interactions HCP avec indicateurs de
+                  performance (nombre, canal, coût moyen)</span
+                >
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700"
+                  >Automatisation de la planification d'appels et visites selon
+                  les priorités cibles et les disponibilités terrain</span
+                >
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700"
+                  >Analyse multicanale : consolidation des interactions email,
+                  téléphone, visioconférence et face-à-face</span
+                >
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700"
+                  >Portail HCP self-service : monitoring du taux d'usage,
+                  suggestions de contenus adaptés</span
+                >
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700"
+                  >Signature digitale intégrée : suivi du taux de conversion dès
+                  la première interaction</span
+                >
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700"
+                  >Reporting de satisfaction : collecte et analyse du feedback
+                  HCP sur les contenus partagés</span
+                >
+              </li>
+            </ul>
+          </section>
+
+          <section
+            class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md p-6"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-comments text-blue-600"></i>
+              Exemple de conversation avec l'Agent
+            </h2>
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+              <div class="mb-4 p-3 bg-gray-50 rounded-lg">
+                <p class="text-gray-600 flex items-center gap-2">
+                  <i class="fas fa-user-md text-blue-600"></i>
+                  Rôle : Représentant terrain / Sales Manager
+                </p>
+              </div>
+              <div class="space-y-4">
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-user-circle text-gray-600 text-xl"></i>
+                  </div>
+                  <div class="flex-grow bg-gray-50 rounded-lg p-3">
+                    <p class="text-gray-700">
+                      "Quels sont les HCP à prioriser
+                      cette semaine ?"
+                    </p>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-robot text-blue-600 text-xl"></i>
+                  </div>
+                  <div class="flex-grow bg-blue-50 rounded-lg p-3">
+                    <p class="text-gray-700">
+                      "14 HCPs à fort potentiel n'ont pas été contacté depuis 23
+                      jours. Je vous propose 5 rendez-vous prioritaires avec un
+                      contenu validé par le médical."
+                    </p>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-user-circle text-gray-600 text-xl"></i>
+                  </div>
+                  <div class="flex-grow bg-gray-50 rounded-lg p-3">
+                    <p class="text-gray-700">
+                      "Quel est mon taux de couverture sur le secteur Ouest ?"
+                    </p>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-robot text-blue-600 text-xl"></i>
+                  </div>
+                  <div class="flex-grow bg-blue-50 rounded-lg p-3">
+                    <p class="text-gray-700">
+                      "Votre taux de couverture est de 92 %, en ligne avec les
+                      objectifs. Vos interactions multicanales moyennes sont à
+                      6,4 par HCP ce mois-ci."
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Right Column -->
+        <div class="space-y-8">
+          <section
+            class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-users text-blue-600"></i>
+              Utilisateurs
+            </h2>
+            <div class="space-y-0 divide-y divide-gray-100">
+              <div
+                class="p-4 hover:bg-gray-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+              >
+                <div class="flex items-center gap-4">
+                  <i class="fas fa-user-md text-blue-600 text-xl"></i>
+                  <div>
+                    <h3 class="font-semibold text-gray-800">
+                      Délégués médicaux
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                      Optimisent leur planning et priorisent les HCP à fort
+                      potentiel
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="p-4 hover:bg-gray-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+              >
+                <div class="flex items-center gap-4">
+                  <i class="fas fa-chart-line text-blue-600 text-xl"></i>
+                  <div>
+                    <h3 class="font-semibold">
+                      Responsables marketing pharmaceutique
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                      Ajustent les campagnes multicanales et le contenu
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="p-4 hover:bg-gray-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+              >
+                <div class="flex items-center gap-4">
+                  <i class="fas fa-microscope text-blue-600 text-xl"></i>
+                  <div>
+                    <h3 class="font-semibold">
+                      Medical Science Liaisons (MSL)
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                      Accélèrent le traitement des demandes d'informations
+                      médicales
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section
+            class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-database text-blue-600"></i>
+              Sources des Données
+            </h2>
+            <ul class="space-y-3">
+              <li class="flex items-center gap-3">
+                <i class="fas fa-server text-blue-600"></i>
+                <span class="text-gray-700"
+                  >CRM (historique des visites et interactions)</span
+                >
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-server text-blue-600"></i>
+                <span class="text-gray-700"
+                  >Logs du portail HCP (taux d'utilisation, types de contenus
+                  consultés)</span
+                >
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-server text-blue-600"></i>
+                <span class="text-gray-700"
+                  >Plateforme de signature digitale (statut et délai de
+                  signature)</span
+                >
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-server text-blue-600"></i>
+                <span class="text-gray-700"
+                  >Enquêtes de satisfaction HCP (questionnaires
+                  post-interaction)</span
+                >
+              </li>
+            </ul>
+          </section>
+
+          <section
+            class="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl shadow-md p-6"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-chart-line text-blue-600"></i>
+              Impacts
+            </h2>
+            <ul class="space-y-3">
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-arrow-up text-green-600"></i>
+                <span class="text-gray-700"
+                  >+25 % d'augmentation de la couverture HCP trimestrielle
+                  (passant de 92 % à 115 %)</span
+                >
+              </li>
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-arrow-down text-green-600"></i>
+                <span class="text-gray-700"
+                  >-30 % du coût moyen par interaction (de 23 € à 16 €)</span
+                >
+              </li>
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-arrow-up text-green-600"></i>
+                <span class="text-gray-700"
+                  >+40 % de hausse du taux de signature digitale en première
+                  interaction (de 61 % à 85 %)</span
+                >
+              </li>
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-clock text-green-600"></i>
+                <span class="text-gray-700"
+                  >Gain de 10 heures/semaine par délégué grâce à
+                  l'automatisation</span
+                >
+              </li>
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-chart-line text-green-600"></i>
+                <span class="text-gray-700"
+                  >ROI projeté : 180 % sur 12 mois</span
+                >
+              </li>
+            </ul>
+          </section>
+        </div>
+      </main>
+
+      <!-- Clinical Engagement section -->
+      <header class="text-center py-8 mb-8 mt-16 border-t pt-16">
+        <div
+          class="bg-gradient-to-r from-blue-600 to-blue-800 text-white inline-block px-6 py-4 rounded-xl shadow-lg mb-4 transform hover:scale-105 transition-transform duration-300"
+        >
+          <h1
+            class="text-3xl md:text-4xl font-bold flex items-center justify-center gap-3 text-white"
+          >
+            <i class="fas fa-clinic-medical text-white"></i>
+            2. Clinical Engagement
+          </h1>
+          <p class="text-white mt-2">Clinical Trial Process Optimization</p>
+        </div>
+      </header>
+
+      <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Left Column -->
+        <div class="space-y-8">
+          <section
+            class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-info-circle text-blue-600"></i>
+              Description
+            </h2>
+            <p class="text-gray-600 leading-relaxed">
+              L'agent Clinical Engagement Accelerator pilote et sécurise chaque
+              étape des essais cliniques, de l'identification des sites à
+              l'inclusion des patients. En agrégeant les données de site
+              activation, de screening automatisé, de suivi des visites et de
+              gestion des queries, il fournit des recommandations proactives
+              pour accélérer les processus, améliorer la conformité aux
+              protocoles et réduire les abandons.
+            </p>
+          </section>
+
+          <section
+            class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-key text-blue-600"></i>
+              Fonctionnalités
+            </h2>
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700">
+                  Suivi en temps réel de l'activation des sites avec alertes si
+                  le délai moyen de 9,8 jours est dépassé
+                </span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700">
+                  Screening patient automatisé grâce à l'IA, couvrant 84 % des
+                  critères d'éligibilité
+                </span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700">
+                  Tableau de bord d'inclusion : délai moyen après contact
+                  initial, projection des dates d'inclusion
+                </span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700">
+                  Monitoring de la conformité aux protocoles : taux de visites
+                  respectées et notifications en cas de dérive
+                </span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700">
+                  Gestion des queries : suivi des queries ouvertes et résolution
+                  sous 48 h (88 %)
+                </span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700">
+                  Analyse des taux d'abandon : identification précoce des
+                  profils à risque pour actions de rétention
+                </span>
+              </li>
+            </ul>
+          </section>
+
+          <section
+            class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md p-6"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-comments text-blue-600"></i>
+              Exemple de conversation avec l'Agent
+            </h2>
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+              <div class="mb-4 p-3 bg-gray-50 rounded-lg">
+                <p class="text-gray-600 flex items-center gap-2">
+                  <i class="fas fa-user-md text-blue-600"></i>
+                  Rôle : Clinical Trial Associate (CTA)
+                </p>
+              </div>
+              <div class="space-y-4">
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-user-circle text-gray-600 text-xl"></i>
+                  </div>
+                  <div class="flex-grow bg-gray-50 rounded-lg p-3">
+                    <p class="text-gray-700">
+                      "Où en est l'activation du site Lyon-Sud ?"
+                    </p>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-robot text-blue-600 text-xl"></i>
+                  </div>
+                  <div class="flex-grow bg-blue-50 rounded-lg p-3">
+                    <p class="text-gray-700">
+                      "Site Lyon-Sud activé en 9,2 jours, avec screening patient
+                      automatisé à 85 %."
+                    </p>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-user-circle text-gray-600 text-xl"></i>
+                  </div>
+                  <div class="flex-grow bg-gray-50 rounded-lg p-3">
+                    <p class="text-gray-700">
+                      "Quels patients sont éligibles pour l'étude DTX-231 ?"
+                    </p>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-robot text-blue-600 text-xl"></i>
+                  </div>
+                  <div class="flex-grow bg-blue-50 rounded-lg p-3">
+                    <p class="text-gray-700">
+                      "7 patients éligibles identifiés cette semaine via IA.
+                      L'inclusion peut être faite en moyenne sous 3,6 jours."
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Right Column -->
+        <div class="space-y-8">
+          <section
+            class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-users text-blue-600"></i>
+              Utilisateurs
+            </h2>
+            <div class="space-y-0 divide-y divide-gray-100">
+              <div
+                class="p-4 hover:bg-gray-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+              >
+                <div class="flex items-center gap-4">
+                  <i class="fas fa-user-md text-blue-600 text-xl"></i>
+                  <div>
+                    <h3 class="font-semibold text-gray-800">
+                      Clinical Trial Associates (CTA)
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                      Pilotent l'activation des sites et coordonnent les
+                      inclusions
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="p-4 hover:bg-gray-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+              >
+                <div class="flex items-center gap-4">
+                  <i class="fas fa-chart-line text-blue-600 text-xl"></i>
+                  <div>
+                    <h3 class="font-semibold">
+                      Responsables opérations cliniques
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                      Optimisent les délais et le budget par site
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="p-4 hover:bg-gray-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+              >
+                <div class="flex items-center gap-4">
+                  <i class="fas fa-database text-blue-600 text-xl"></i>
+                  <div>
+                    <h3 class="font-semibold">Data Managers</h3>
+                    <p class="text-gray-600 text-sm">
+                      Gèrent les queries et assurent la qualité des données
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section
+            class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-database text-blue-600"></i>
+              Sources des Données
+            </h2>
+            <ul class="space-y-3">
+              <li class="flex items-center gap-3">
+                <i class="fas fa-server text-blue-600"></i>
+                <span class="text-gray-700"
+                  >CTMS (Clinical Trial Management System)</span
+                >
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-server text-blue-600"></i>
+                <span class="text-gray-700"
+                  >EDC (Electronic Data Capture) pour le suivi des inclusions et
+                  la gestion des queries</span
+                >
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-server text-blue-600"></i>
+                <span class="text-gray-700"
+                  >Outils de screening IA connectés aux bases de données
+                  patients</span
+                >
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-server text-blue-600"></i>
+                <span class="text-gray-700"
+                  >EHR pour valider les données cliniques pré-inclusion</span
+                >
+              </li>
+            </ul>
+          </section>
+
+          <section
+            class="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl shadow-md p-6"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-chart-line text-blue-600"></i>
+              Impacts
+            </h2>
+            <ul class="space-y-3">
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-arrow-down text-green-600"></i>
+                <span class="text-gray-700"
+                  >−20 % du délai moyen d'activation des sites</span
+                >
+              </li>
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-arrow-down text-green-600"></i>
+                <span class="text-gray-700">−25 % du coût moyen par site</span>
+              </li>
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-arrow-up text-green-600"></i>
+                <span class="text-gray-700"
+                  >+15 % d'augmentation du taux d'automatisation du screening
+                </span>
+              </li>
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-arrow-down text-green-600"></i>
+                <span class="text-gray-700"
+                  >−30 % du délai moyen d'inclusion après contact</span
+                >
+              </li>
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-arrow-up text-green-600"></i>
+                <span class="text-gray-700"
+                  >+5 % de respect des protocoles</span
+                >
+              </li>
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-arrow-down text-green-600"></i>
+                <span class="text-gray-700"
+                  >−40 % du taux d'abandon patient</span
+                >
+              </li>
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-chart-line text-green-600"></i>
+                <span class="text-gray-700"
+                  >ROI projeté : 150 % sur 12 mois</span
+                >
+              </li>
+            </ul>
+          </section>
+        </div>
+      </main>
+
+      <!-- Patient Engagement section -->
+      <header class="text-center py-8 mb-8 mt-16 border-t pt-16">
+        <div
+          class="bg-gradient-to-r from-blue-600 to-blue-800 text-white inline-block px-6 py-4 rounded-xl shadow-lg mb-4 transform hover:scale-105 transition-transform duration-300"
+        >
+          <h1
+            class="text-3xl md:text-4xl font-bold flex items-center justify-center gap-3 text-white"
+          >
+            <i class="fas fa-user-nurse text-white"></i>
+            3. Patient Engagement
+          </h1>
+          <p class="text-white mt-2"></p>
+            Patient Support & Adherence Enhancement
+          </p>
+        </div>
+      </header>
+
+      <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Left Column -->
+        <div class="space-y-8">
+          <section
+            class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-info-circle text-blue-600"></i>
+              Description
+            </h2>
+            <p class="text-gray-600 leading-relaxed">
+              L'agent Patient Engagement optimizer veille à fluidifier chaque
+              étape du parcours patient, depuis la vérification de leur
+              couverture jusqu'à l'accompagnement personnalisé. En centralisant
+              les données d'assurance, de programmes de soutien et de feedback
+              patient, il automatise les tâches administratives, accélère
+              l'accès aux aides financières et favorise l'adhésion aux parcours
+              thérapeutiques, tout en maintenant un haut niveau de satisfaction.
+            </p>
+          </section>
+
+          <section
+            class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-key text-blue-600"></i>
+              Fonctionnalités
+            </h2>
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700">
+                  Automatisation des vérifications de couverture en temps réel
+                  (96 %)
+                </span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700">
+                  Activation accélérée des assistances financières : suivi des
+                  délais et relances automatiques
+                </span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700">
+                  Tableau de bord d'adhésion aux programmes : taux d'adhésion et
+                  alertes de relance personnalisées
+                </span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700">
+                  Suivi de la satisfaction patient via enquêtes post-parcours et
+                  analyse de feedback
+                </span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700">
+                  Analyse d'impact IA : mesure de la réduction des délais de
+                  traitement et suggestions d'amélioration
+                </span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700">
+                  Monitoring de la rétention : détection des risques d'abandon
+                  et déclenchement d'actions de réengagement
+                </span>
+              </li>
+            </ul>
+          </section>
+
+          <section
+            class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md p-6"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-comments text-blue-600"></i>
+              Exemple de conversation avec l'Agent
+            </h2>
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+              <div class="mb-4 p-3 bg-gray-50 rounded-lg">
+                <p class="text-gray-600 flex items-center gap-2">
+                  <i class="fas fa-user-md text-blue-600"></i>
+                  Rôle : Patient Support Program Manager
+                </p>
+              </div>
+              <div class="space-y-4">
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-user-circle text-gray-600 text-xl"></i>
+                  </div>
+                  <div class="flex-grow bg-gray-50 rounded-lg p-3">
+                    <p class="text-gray-700">
+                      "Combien de patients ont été activés cette
+                      semaine ?"
+                    </p>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-robot text-blue-600 text-xl"></i>
+                  </div>
+                  <div class="flex-grow bg-blue-50 rounded-lg p-3">
+                    <p class="text-gray-700">
+                      "37 nouveaux patients inscrits. Vérification couverture
+                      automatisée dans 96 % des cas."
+                    </p>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-user-circle text-gray-600 text-xl"></i>
+                  </div>
+                  <div class="flex-grow bg-gray-50 rounded-lg p-3">
+                    <p class="text-gray-700">"Et les aides financières ?"</p>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-robot text-blue-600 text-xl"></i>
+                  </div>
+                  <div class="flex-grow bg-blue-50 rounded-lg p-3">
+                    <p class="text-gray-700">
+                      "L'activation des programmes d'assistance a pris en
+                      moyenne 2,4 jours. 81 % des patients adhèrent au suivi
+                      personnalisé."
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Right Column -->
+        <div class="space-y-8">
+          <section
+            class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-users text-blue-600"></i>
+              Utilisateurs
+            </h2>
+            <div class="space-y-0 divide-y divide-gray-100">
+              <div
+                class="p-4 hover:bg-gray-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+              >
+                <div class="flex items-center gap-4">
+                  <i class="fas fa-user-nurse text-blue-600 text-xl"></i>
+                  <div>
+                    <h3 class="font-semibold text-gray-800">
+                      Patient Support Program Manager
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                      Pilotent l'activation et le suivi des parcours
+                      d'accompagnement
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="p-4 hover:bg-gray-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+              >
+                <div class="flex items-center gap-4">
+                  <i class="fas fa-user-shield text-blue-600 text-xl"></i>
+                  <div>
+                    <h3 class="font-semibold">
+                      Coordinateurs de parcours de soins
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                      Optimisent la couverture et l'accès aux aides financières
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="p-4 hover:bg-gray-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+              >
+                <div class="flex items-center gap-4">
+                  <i class="fas fa-clinic-medical text-blue-600 text-xl"></i>
+                  <div>
+                    <h3 class="font-semibold">
+                      Pharmaciens hospitaliers et d'officine
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                      Valident la prise en charge et informent sur les
+                      programmes
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="p-4 hover:bg-gray-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+              >
+                <div class="flex items-center gap-4">
+                  <i class="fas fa-user-md text-blue-600 text-xl"></i>
+                  <div>
+                    <h3 class="font-semibold text-gray-800">
+                      Infirmiers référents
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                      Accompagnent les patients et recueillent le feedback
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section
+            class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-database text-blue-600"></i>
+              Sources des Données
+            </h2>
+            <ul class="space-y-3">
+              <li class="flex items-center gap-3">
+                <i class="fas fa-server text-blue-600"></i>
+                <span class="text-gray-700"
+                  >API des assureurs pour la vérification de couverture</span
+                >
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-server text-blue-600"></i>
+                <span class="text-gray-700"
+                  >Système de gestion des aides financières et dossiers
+                  d'assistance</span
+                >
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-server text-blue-600"></i>
+                <span class="text-gray-700"
+                  >Portail patient (inscriptions, suivi personnalisé, logs
+                  d'utilisation)</span
+                >
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-server text-blue-600"></i>
+                <span class="text-gray-700"
+                  >Enquêtes de satisfaction et retours qualitatifs</span
+                >
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-server text-blue-600"></i>
+                <span class="text-gray-700"
+                  >Dossiers médicaux électroniques pour valider l'adhésion
+                  thérapeutique</span
+                >
+              </li>
+            </ul>
+          </section>
+
+          <section
+            class="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl shadow-md p-6"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-chart-line text-blue-600"></i>
+              Impacts
+            </h2>
+            <ul class="space-y-3">
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-arrow-down text-green-600"></i>
+                <span class="text-gray-700"
+                  >−15 % du coût moyen par parcours patient</span
+                >
+              </li>
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-arrow-down text-green-600"></i>
+                <span class="text-gray-700"
+                  >−30 % du délai d'activation des aides financières</span
+                >
+              </li>
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-arrow-up text-green-600"></i>
+                <span class="text-gray-700"
+                  >+5 pt de satisfaction globale patient</span
+                >
+              </li>
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-arrow-down text-green-600"></i>
+                <span class="text-gray-700"
+                  >−40 % des abandons en programme grâce à la rétention
+                  proactive</span
+                >
+              </li>
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-chart-line text-green-600"></i>
+                <span class="text-gray-700"
+                  >ROI projeté : 140 % sur 12 mois</span
+                >
+              </li>
+            </ul>
+          </section>
+        </div>
+      </main>
+
+      <!-- Collaborative Engagement section -->
+      <header class="text-center py-8 mb-8 mt-16 border-t pt-16">
+        <div
+          class="bg-gradient-to-r from-blue-600 to-blue-800 text-white inline-block px-6 py-4 rounded-xl shadow-lg mb-4 transform hover:scale-105 transition-transform duration-300"
+        >
+          <h1
+            class="text-3xl md:text-4xl font-bold flex items-center justify-center gap-3 text-white"
+          >
+            <i class="fas fa-people-group text-white"></i>
+            4. Collaborative Engagement
+          </h1>
+          <p class="text-blue-200 mt-2"></p>
+            Multi-Stakeholder Collaboration Platform
+          </p>
+        </div>
+      </header>
+
+      <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Left Column -->
+        <div class="space-y-8">
+          <section
+            class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-info-circle text-blue-600"></i>
+              Description
+            </h2>
+            <p class="text-gray-600 leading-relaxed">
+              L'agent Collaborative Engagement fédère l'ensemble des acteurs
+              (HCP, pharma, distributeurs, CROs, fournisseurs) autour du patient
+              pour fluidifier les échanges et accélérer la résolution des
+              demandes. En centralisant les requêtes, les plaintes et les
+              collaborations B2B, il propose des workflows coordonnés, assure le
+              suivi des temps de traitement et mesure la satisfaction des
+              partenaires pour maximiser l'efficacité collective.
+            </p>
+          </section>
+
+          <section
+            class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-key text-blue-600"></i>
+              Fonctionnalités
+            </h2>
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700">
+                  Suivi multi-acteurs par dossier patient : indicateur de
+                  collaboration active (68 %)
+                </span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700">
+                  Gestion centralisée des requêtes fournisseurs : monitoring du
+                  délai (<36 h) et alertes proactives
+                </span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700">
+                  Intégration HCP–Pharma via une plateforme unifiée (77 %
+                  d'adoption)
+                </span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fas fa-check-circle text-blue-600 mt-1"></i>
+                <span class="text-gray-700">
+                  Tableau de bord réclamations et plaintes : analyse du cycle de
+                  gestion et reporting de réduction (−41 %)
+                </span>
+              </li>
+            </ul>
+          </section>
+
+          <section
+            class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md p-6"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-comments text-blue-600"></i>
+              Exemple de conversation avec l'Agent
+            </h2>
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+              <div class="mb-4 p-3 bg-gray-50 rounded-lg">
+                <p class="text-gray-600 flex items-center gap-2">
+                  <i class="fas fa-user-md text-blue-600"></i>
+                  Rôle : Responsable relation fournisseurs
+                </p>
+              </div>
+              <div class="space-y-4">
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-user-circle text-gray-600 text-xl"></i>
+                  </div>
+                  <div class="flex-grow bg-gray-50 rounded-lg p-3">
+                    <p class="text-gray-700">
+                      "Une plainte a été déposée hier. Où en est-on
+                      ?"
+                    </p>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-robot text-blue-600 text-xl"></i>
+                  </div>
+                  <div class="flex-grow bg-blue-50 rounded-lg p-3">
+                    <p class="text-gray-700">
+                      "Traitée à 68 % par les équipes pharma et logistique.
+                      Délai estimé de résolution : 14 heures."
+                    </p>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-user-circle text-gray-600 text-xl"></i>
+                  </div>
+                  <div class="flex-grow bg-gray-50 rounded-lg p-3">
+                    <p class="text-gray-700">"Des réclamations similaires ?"</p>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-robot text-blue-600 text-xl"></i>
+                  </div>
+                  <div class="flex-grow bg-blue-50 rounded-lg p-3">
+                    <p class="text-gray-700">
+                      "3 cas similaires dans les 30 derniers jours. J'ai généré
+                      un rapport comparatif."
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Right Column -->
+        <div class="space-y-8">
+          <section
+            class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-users text-blue-600"></i>
+              Utilisateurs
+            </h2>
+            <div class="space-y-0 divide-y divide-gray-100">
+              <div
+                class="p-4 hover:bg-gray-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+              >
+                <div class="flex items-center gap-4">
+                  <i class="fas fa-user-tie text-blue-600 text-xl"></i>
+                  <div>
+                    <h3 class="font-semibold text-gray-800">
+                      Responsables relation fournisseurs
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                      Coordonnent la résolution des demandes et des plaintes
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="p-4 hover:bg-gray-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+              >
+                <div class="flex items-center gap-4">
+                  <i class="fas fa-briefcase text-blue-600 text-xl"></i>
+                  <div>
+                    <h3 class="font-semibold">
+                      Chefs de produit pharmaceutique
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                      Pilotent l'intégration HCP–Pharma et analysent le NPS
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="p-4 hover:bg-gray-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+              >
+                <div class="flex items-center gap-4">
+                  <i class="fas fa-truck text-blue-600 text-xl"></i>
+                  <div>
+                    <h3 class="font-semibold">
+                      Responsables logistique et supply chain
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                      Optimisent le traitement des réclamations fournisseurs
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="p-4 hover:bg-gray-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+              >
+                <div class="flex items-center gap-4">
+                  <i class="fas fa-building text-blue-600 text-xl"></i>
+                  <div>
+                    <h3 class="font-semibold text-gray-800">
+                      CROs et distributeurs
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                      Collaborent sur les dossiers patients et remontent leur
+                      feedback
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section
+            class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-database text-blue-600"></i>
+              Sources des Données
+            </h2>
+            <ul class="space-y-3">
+              <li class="flex items-center gap-3">
+                <i class="fas fa-server text-blue-600"></i>
+                <span class="text-gray-700"
+                  >CRM B2B pour le suivi des collaborations et coûts (310
+                  €/collaboration)</span
+                >
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-server text-blue-600"></i>
+                <span class="text-gray-700"
+                  >Système de ticketing fournisseurs (horodatage des requêtes,
+                  SLA de 36 h)</span
+                >
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-server text-blue-600"></i>
+                <span class="text-gray-700"
+                  >Base réclamations et plaintes (statuts, temps de
+                  résolution)</span
+                >
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-server text-blue-600"></i>
+                <span class="text-gray-700"
+                  >Enquêtes de satisfaction NPS partenaires</span
+                >
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-server text-blue-600"></i>
+                <span class="text-gray-700"
+                  >Outils de reporting (génération de rapports
+                  comparatifs)</span
+                >
+              </li>
+            </ul>
+          </section>
+
+          <section
+            class="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl shadow-md p-6"
+          >
+            <h2
+              class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-3"
+            >
+              <i class="fas fa-chart-line text-blue-600"></i>
+              Impacts
+            </h2>
+            <ul class="space-y-3">
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-arrow-up text-green-600"></i>
+                <span class="text-gray-700"
+                  >+20 % d'augmentation de la collaboration active</span
+                >
+              </li>
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-arrow-down text-green-600"></i>
+                <span class="text-gray-700"
+                  >−50 % du temps moyen de traitement des requêtes fournisseurs
+                </span>
+              </li>
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-arrow-down text-green-600"></i>
+                <span class="text-gray-700"
+                  >−41 % du cycle de gestion des plaintes</span
+                >
+              </li>
+              <li
+                class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm"
+              >
+                <i class="fas fa-chart-line text-green-600"></i>
+                <span class="text-gray-700"
+                  >ROI projeté : 160 % sur 12 mois</span
+                >
+              </li>
+            </ul>
+          </section>
+        </div>
+      </main>
+
+      <footer
+      class="mt-16 pt-8 border-t border-gray-200 text-center text-gray-500"
+    >
+      <p>
+        © 2025 Augmented AgentForce HLS Solution Specifications by Nacera
+        Vallat, Baybridgedigital -
+        <a href="mailto:nvallat@baybridgedigital.com"
+          >nvallat@baybridgedigital.com</a
+        >
+      </p>
+      <p class="text-sm mt-2">
+        Confidential and Proprietary of Baybridgedigital
+      </p>
+    </footer>
+
+    </div>
+
+
+    <script src="js/main.js"></script>
+  </body>
+</html>
